@@ -1,0 +1,96 @@
+@charset "UTF-8";
+/* ==========================================================================
+   BcBlogTechTerminalTheme : baserCMS5 x
+
+   スタイル：ターミナル風（Terminal Dark）
+   初期はダーク（config/setting.php の defaultScheme）。地の色はサブ（ほぼ黒）。見出しに「#」「>」、日付・タグは等幅。
+   4色はテーマ設定（config.css の --theme-*）が優先。ここの値は、テーマ設定が空のときの代わりの値
+   ========================================================================== */
+:root {
+	--main: var(--theme-main, #f5a524);
+	--sub: var(--theme-sub, #0d1117);
+	--link: var(--theme-link, #f5a524);
+	--hover: var(--theme-hover, #ffd27a);
+	--font-body: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+	--bg: #ffffff;
+	--surface: #ffffff;
+	--radius: 6px;
+	--shadow: none;
+	--shadow-hover: none;
+	--line: #d9dee4;
+}
+/* 相対色に対応していないブラウザ向け：メイン（明るい黄色）の上の文字は黒。対応しているブラウザは base.css で自動に切り替わる */
+@supports not (color: oklch(from red l c h)) {
+	:root { --on-main: #111111; }
+}
+
+/* ダーク：地はサブ色。サブが明るい色に変わっても暗さを保つ */
+:root[data-theme="dark"] {
+	--bg: color-mix(in oklab, var(--sub) 80%, #05070a);
+	--surface: color-mix(in oklab, var(--bg) 96%, white);
+	--line: color-mix(in oklab, var(--bg) 84%, white);
+	--line-strong: color-mix(in oklab, var(--bg) 72%, white);
+	--fg: #e6edf3;
+	--fg-muted: #9da7b3;
+	--ph-bg: color-mix(in oklab, var(--bg) 85%, white);
+	--ad-bg: color-mix(in oklab, var(--bg) 94%, white);
+	--main-soft: color-mix(in oklab, var(--main) 14%, var(--bg));
+	--code-bg: color-mix(in oklab, var(--bg) 70%, black);
+	--code-line: color-mix(in oklab, var(--main) 22%, #2b333d);
+}
+@supports (color: oklch(from red l c h)) {
+	:root[data-theme="dark"] {
+		--bg: oklch(from var(--sub) min(l, .2) min(c, .04) h);
+		--heading: #f0f3f6;
+	}
+}
+
+/* 等幅で見せる部分 */
+.bt-card-meta, .bt-article-meta, .bt-tag, .bt-count, .bt-breadcrumb, .bt-list-kicker, .bt-list-count,
+.bt-widget-title, .bt-card-cat, .bt-article-cat, .bt-comment-date, .bt-recent-list time, .bt-pagination,
+.bt-share-label, .bt-copyright, .bt-post-nav .bt-label, .bt-section-title { font-family: var(--font-mono); }
+
+/* ブランド：プロンプト風 */
+.bt-brand-name { font-family: var(--font-mono); font-size: 22px; letter-spacing: 0; }
+.bt-brand-name a:not(:has(img))::before { content: "~/"; color: var(--main-ink); }
+.bt-brand-name a:not(:has(img))::after { content: "_"; margin-left: 2px; color: var(--main-ink); animation: bt-caret 1.1s steps(1) infinite; }
+@keyframes bt-caret { 50% { opacity: 0; } }
+.bt-site .bt-gnav-list a { font-size: 14px; }
+.bt-gnav-list a::before { content: "/"; margin-right: 2px; color: var(--fg-muted); }
+
+/* 記号つきの見出し */
+.bt-section-title::before, .bt-widget-title::before { content: "> "; color: var(--main-ink); }
+.bt-card-title a::before { content: "> "; font-family: var(--font-mono); color: var(--main-ink); }
+.bt-card-cat::before, .bt-article-cat::before { content: "["; }
+.bt-card-cat::after, .bt-article-cat::after { content: "]"; }
+.bt-site .bt-article-cat { background: transparent; padding: 0; }
+.bt-article-title::before { content: "# "; font-family: var(--font-mono); color: var(--main-ink); }
+.bt-post-body h2 { border-left: 0; padding-left: 0; }
+.bt-post-body :is(h2, h3)::before { font-family: var(--font-mono); color: var(--main-ink); font-weight: 700; }
+.bt-post-body h2::before { content: "## "; }
+.bt-post-body h3 { border-bottom: 1px dashed var(--line-strong); }
+.bt-post-body h3::before { content: "### "; }
+.bt-post-body h4::before { content: "####"; width: auto; height: auto; background: none; border-radius: 0; translate: none; font-family: var(--font-mono); color: var(--main-ink); font-size: .9em; }
+.bt-post-body strong { background: none; color: var(--heading); box-shadow: inset 0 -2px 0 color-mix(in oklab, var(--main) 55%, transparent); }
+.bt-post-body blockquote > p:first-child > strong:only-child { box-shadow: none; }
+
+/* タグ：等幅の四角いチップ */
+.bt-site .bt-tag { border-radius: 4px; background: transparent; border-color: var(--line-strong); }
+.bt-tag::before { color: var(--main-ink); }
+.bt-site .bt-tag:hover { color: var(--main-ink); border-color: var(--main); }
+
+/* カード */
+.bt-card-noimage { font-family: var(--font-mono); font-size: 20px; letter-spacing: 0; }
+.bt-card-noimage span::before { content: "$ "; opacity: .7; } /* 枠（grid）ではなく文字に付けて、1行にする */
+
+.bt-list-title { font-family: var(--font-mono); }
+.bt-list-title .bt-hash { margin-right: .3em; }
+
+/* 目次：現在地に「>」 */
+.bt-toc a.is-active::before { content: "> "; font-family: var(--font-mono); }
+
+.bt-btn { font-family: var(--font-mono); }
+.bt-footer { font-size: 13px; }
+.bt-footer-name { font-family: var(--font-mono); }
+.bt-footer-name a::before { content: "~/"; color: var(--main-ink); }
